@@ -1,0 +1,33 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import Navbar from './components/Navbar';
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+
+const PrivateRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  if (loading) return <div>Loading...</div>;
+  return user ? children : <Navigate to="/login" />;
+};
+
+function App() {
+  const { user } = useAuth();
+
+  return (
+    <Router>
+      <div className="app-container">
+        <Navbar />
+        <main className="main-content">
+          <Routes>
+            <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
