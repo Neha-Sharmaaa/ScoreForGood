@@ -10,7 +10,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchScores = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5000/api/scores', {
+        const { data } = await axios.get('http://localhost:5001/api/scores', {
           headers: { Authorization: `Bearer ${user.token}` }
         });
         setScores(data);
@@ -24,7 +24,7 @@ const Dashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('http://localhost:5000/api/scores', newScore, {
+      const { data } = await axios.post('http://localhost:5001/api/scores', newScore, {
         headers: { Authorization: `Bearer ${user.token}` }
       });
       setScores([data, ...scores]);
