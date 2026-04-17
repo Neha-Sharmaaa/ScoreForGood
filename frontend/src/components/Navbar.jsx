@@ -15,17 +15,17 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-brand">
-        <Club size={32} color="var(--primary)" />
-        ScoreForGood
+        <Club size={32} color="var(--primary)" fill="rgba(16, 185, 129, 0.2)" />
+        <span>ScoreForGood</span>
       </Link>
       <div className="navbar-links">
         {user ? (
           <>
-            <span style={{ display: 'flex', alignItems: 'center', fontWeight: '500' }}>
-              Welcome, {user.name}
+            <span style={{ display: 'flex', alignItems: 'center', fontWeight: '500', color: 'var(--text-muted)' }}>
+              Logged in as <strong style={{ color: 'var(--text-main)', marginLeft: '6px' }}>{user.name}</strong>
             </span>
-            <button className="btn-logout" onClick={handleLogout}>
-              <LogOut size={20} />
+            <button className="btn-logout" aria-label="Sign Out" onClick={handleLogout}>
+              <LogOut size={18} />
             </button>
           </>
         ) : (

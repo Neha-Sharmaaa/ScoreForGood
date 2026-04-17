@@ -16,11 +16,13 @@ const Login = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '4rem auto' }} className="card">
-      <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Sign in to ScoreForGood</h2>
+    <div style={{ maxWidth: '420px', margin: '6rem auto' }} className="card">
+      <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '2rem', fontWeight: 800 }}>Welcome Back</h2>
+      <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '2rem' }}>Sign in to track your charity progress</p>
+      
       <form onSubmit={handleSubmit}>
         <div className="input-group">
-          <label>Email</label>
+          <label>Email Address</label>
           <input 
             type="email" 
             value={email} 
