@@ -17,12 +17,12 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
-        <main className="main-content">
+        {user && <Navbar />}
+        <main className={user ? "main-content" : ""}>
           <Routes>
             <Route path="/login" element={user ? <Navigate to="/dashboard" /> : <Login />} />
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/" element={<Navigate to="/dashboard" />} />
+            <Route path="/" element={<Navigate to={user ? "/dashboard" : "/login"} />} />
           </Routes>
         </main>
       </div>
