@@ -9,25 +9,33 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Login started...");
     setIsLoading(true);
-    // Artificially delay to show the nice loader
+    // Increased delay to 3 seconds so user definitely sees it
     setTimeout(async () => {
+      console.log("Executing login logic...");
       try {
         await login(email, password);
       } catch (error) {
+        console.error("Login Error:", error);
         alert('Login failed. Ensure backend is running and user exists.');
         setIsLoading(false);
       }
-    }, 1500);
+    }, 3000);
   };
 
   return (
     <div style={{ maxWidth: '420px', margin: '6rem auto', position: 'relative' }} className="card">
       {isLoading && (
         <div className="loader-overlay">
-          <div className="golf-ball"></div>
-          <div className="golf-path"></div>
-          <p style={{ marginTop: '1rem', color: 'var(--primary)', fontWeight: '600' }}>Swinging into action...</p>
+          <img 
+            src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHY1ZGp6ampqampqampqampqampqampqampqampqampqampqampqJmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGpx5OdfH9G0M/giphy.gif" 
+            alt="Golfing..." 
+            style={{ width: '150px', borderRadius: '12px', marginBottom: '1rem' }}
+          />
+          <p style={{ color: 'var(--primary)', fontWeight: '700', fontSize: '1.2rem', letterSpacing: '1px' }}>
+            SWINGING INTO ACTION...
+          </p>
         </div>
       )}
       <h2 style={{ marginBottom: '0.5rem', textAlign: 'center', fontSize: '2rem', fontWeight: 800 }}>Welcome Back</h2>

@@ -362,16 +362,20 @@ button {
 .loader-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(11, 15, 25, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(11, 15, 25, 0.95);
+  backdrop-filter: blur(12px);
   display: flex;
   flex-direction: column;
-  items-center;
   justify-content: center;
   align-items: center;
-  z-index: 10;
+  z-index: 1000;
   border-radius: var(--radius);
-  animation: fadeIn 0.3s ease;
+  animation: simpleFade 0.3s ease;
+}
+
+@keyframes simpleFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .golf-path {
