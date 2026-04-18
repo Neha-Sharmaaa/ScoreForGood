@@ -51,7 +51,7 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchScores = async () => {
       try {
-        const { data } = await axios.get('http://localhost:5001/api/scores', {
+        const { data } = await axios.get('https://scoreforgood.onrender.com/api/scores', {
           headers: { Authorization: `Bearer ${user?.token}` }
         });
         setScores(data);
@@ -71,7 +71,7 @@ const Dashboard = () => {
     e.preventDefault();
     if (!newScore.courseName || !newScore.points) return;
     try {
-      const { data } = await axios.post('http://localhost:5001/api/scores', newScore, {
+      const { data } = await axios.post('https://scoreforgood.onrender.com/api/scores', newScore, {
         headers: { Authorization: `Bearer ${user?.token}` }
       });
       setScores([data, ...scores]);
@@ -274,8 +274,8 @@ const Dashboard = () => {
         </div>
 
         {/* Right Column: List */}
-        <div className="card">
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Score History</h3>
+        <div className="card" style={{ height: 'fit-content', maxHeight: '450px', display: 'flex', flexDirection: 'column' }}>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', flexShrink: 0 }}>Score History</h3>
           {scores.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-muted)' }}>
               <Trophy size={48} opacity={0.2} style={{ marginBottom: '1rem' }} />
@@ -283,7 +283,7 @@ const Dashboard = () => {
               <p style={{ fontSize: '0.9rem' }}>Log your first score to see it here!</p>
             </div>
           ) : (
-            <div className="score-list">
+            <div className="score-list" style={{ overflowY: 'auto', flex: 1, paddingRight: '0.5rem' }}>
               {scores.map((score, idx) => (
                 <div 
                   key={score._id} 
