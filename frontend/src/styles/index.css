@@ -358,6 +358,55 @@ button {
   background: var(--primary);
 }
 
+/* Golf Loader Styles */
+.loader-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  items-center;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: var(--radius);
+  animation: fadeIn 0.3s ease;
+}
+
+.golf-path {
+  width: 120px;
+  height: 4px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.golf-ball {
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border-radius: 50%;
+  position: relative;
+  box-shadow: inset -2px -2px 5px rgba(0,0,0,0.1), 0 0 10px rgba(255,255,255,0.2);
+  animation: bounceBall 1s infinite ease-in-out;
+}
+
+.golf-ball::after {
+  content: "⛳";
+  position: absolute;
+  top: -30px;
+  right: -40px;
+  font-size: 1.5rem;
+}
+
+@keyframes bounceBall {
+  0%, 100% { transform: translateY(0) scale(1.1, 0.9); }
+  50% { transform: translateY(-30px) scale(0.9, 1.1); }
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
