@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart, CheckCircle2, XCircle, Loader2, Sparkles } from 'lucide-react';
+import { Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart, CheckCircle2, XCircle, Loader2, Sparkles, PartyPopper } from 'lucide-react';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -97,7 +97,9 @@ const Dashboard = () => {
       {/* Header Section */}
       <div className="dashboard-header">
         <div>
-          <h1>Welcome back, {user?.name.split(' ')[0] || 'Golfer'}! 🏌️‍♂️</h1>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            Welcome back, {user?.name.split(' ')[0] || 'Golfer'}! <Sparkles color="#fbbf24" size={28} />
+          </h1>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem', fontSize: '1.1rem' }}>
             Ready to log your latest achievements?
           </p>
@@ -337,7 +339,9 @@ const Dashboard = () => {
       {/* Expandable Draw Details Panel */}
       {showDrawDetails && (
         <div ref={detailsRef} style={{ padding: '2rem', marginTop: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', animation: 'fadeIn 0.3s ease-out' }}>
-          <h4 style={{ color: '#3b82f6', marginBottom: '0.75rem', fontSize: '1.2rem' }}>🎉 Upcoming Draw Status</h4>
+          <h4 style={{ color: '#3b82f6', marginBottom: '0.75rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <PartyPopper size={20} /> Upcoming Draw Status
+          </h4>
           <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: '1.6' }}>
             The next monthly draw occurs on the last Friday of this month. By actively tracking {scores.length} rounds, you have successfully secured {scores.length} entries into the raffle pool! Good luck!
           </p>
