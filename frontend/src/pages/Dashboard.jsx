@@ -283,7 +283,7 @@ const Dashboard = () => {
             <HelpCircle size={64} color="var(--text-muted)" style={{ marginBottom: '1.5rem' }} />
             <h2 style={{ marginBottom: '1rem' }}>Need Help?</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Our team is here to support your mission for good.</p>
-            <button className="btn-primary">Contact Support</button>
+            <button className="btn-primary" onClick={() => window.location.href = 'mailto:support@scoreforgood.com?subject=Support Request - ScoreForGood'}>Contact Support</button>
           </div>
         )}
       </div>

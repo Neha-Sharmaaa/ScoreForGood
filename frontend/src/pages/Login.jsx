@@ -13,20 +13,17 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Artificial delay for premium feel
-    setTimeout(async () => {
-      try {
-        if (isSignUp) {
-          await register(name, email, password);
-        } else {
-          await login(email, password);
-        }
-      } catch (error) {
-        console.error("Auth Error:", error);
-        alert('Authentication failed. Please try again.');
-        setIsLoading(false);
+    try {
+      if (isSignUp) {
+        await register(name, email, password);
+      } else {
+        await login(email, password);
       }
-    }, 2000);
+    } catch (error) {
+      console.error("Auth Error:", error);
+      alert('Authentication failed. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
