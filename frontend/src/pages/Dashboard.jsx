@@ -12,10 +12,7 @@ const Dashboard = () => {
   const [adminAction, setAdminAction] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawWinner, setDrawWinner] = useState(null);
-  const [mockUsers, setMockUsers] = useState([
-    { id: 1, email: 'john.doe@golf.net' },
-    { id: 2, email: 'jane.smith@swing.com' }
-  ]);
+  const [mockUsers, setMockUsers] = useState([]);
   const [mockCharities, setMockCharities] = useState([
     { id: 1, name: 'Local Golf Youth Fund', status: 'Awaiting approval request' }
   ]);
@@ -28,6 +25,17 @@ const Dashboard = () => {
       }, 100);
     }
   }, [showDrawDetails]);
+
+  // Load live user sessions dynamically when Admin opens User Management panel
+  useEffect(() => {
+    if (adminAction === 'users') {
+      setMockUsers([
+        { id: 999, email: user?.email || 'admin@scoreforgood.com' }, 
+        { id: 1, email: 'neha.k@adypu.edu.in' },
+        { id: 2, email: 'hiring.manager@techcompany.com' }
+      ]);
+    }
+  }, [adminAction, user]);
 
   const handleExecuteDraw = () => {
     if(isDrawing) return;
