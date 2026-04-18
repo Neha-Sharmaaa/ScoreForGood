@@ -12,6 +12,13 @@ const Dashboard = () => {
   const [adminAction, setAdminAction] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawWinner, setDrawWinner] = useState(null);
+  const [mockUsers, setMockUsers] = useState([
+    { id: 1, email: 'john.doe@golf.net' },
+    { id: 2, email: 'jane.smith@swing.com' }
+  ]);
+  const [mockCharities, setMockCharities] = useState([
+    { id: 1, name: 'Local Golf Youth Fund', status: 'Awaiting approval request' }
+  ]);
   const detailsRef = useRef(null);
 
   useEffect(() => {
@@ -135,29 +142,50 @@ const Dashboard = () => {
           {/* Dynamic Admin Context Panels */}
           {adminAction === 'users' && (
             <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', animation: 'fadeIn 0.3s ease' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '1rem', borderBottom: '1px solid var(--border-glass)' }}>
-                <span>john.doe@golf.net</span>
-                <button style={{ color: '#ef4444', background: 'transparent' }}><XCircle size={18}/></button>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem' }}>
-                <span>jane.smith@swing.com</span>
-                <button style={{ color: '#ef4444', background: 'transparent' }}><XCircle size={18}/></button>
-              </div>
+              {mockUsers.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>All users managed successfully.</p> : mockUsers.map((u, idx) => (
+                <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: idx === mockUsers.length - 1 ? '0' : '1rem', paddingTop: idx === 0 ? '0' : '1rem', borderBottom: idx === mockUsers.length - 1 ? 'none' : '1px solid var(--border-glass)' }}>
+                  <span>{u.email}</span>
+                  <button 
+                    onClick={() => setMockUsers(mockUsers.filter(usr => usr.id !== u.id))} 
+                    style={{ color: '#ef4444', background: 'transparent', cursor: 'pointer', transition: 'all 0.2s' }}
+                    onMouseOver={e=>e.currentTarget.style.transform='scale(1.2)'} 
+                    onMouseOut={e=>e.currentTarget.style.transform='scale(1)'}
+                  >
+                    <XCircle size={18}/>
+                  </button>
+                </div>
+              ))}
             </div>
           )}
 
           {adminAction === 'charities' && (
             <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', animation: 'fadeIn 0.3s ease' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <strong style={{ color: '#fff' }}>Local Golf Youth Fund</strong>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>Awaiting approval request</div>
+              {mockCharities.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>No pending charity requests.</p> : mockCharities.map((c) => (
+                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <strong style={{ color: '#fff' }}>{c.name}</strong>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>{c.status}</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                     <button 
+                       onClick={() => setMockCharities(mockCharities.filter(chr => chr.id !== c.id))} 
+                       style={{ color: '#10b981', background: 'transparent', cursor: 'pointer', transition: 'all 0.2s' }} 
+                       onMouseOver={e=>e.currentTarget.style.transform='scale(1.2)'} 
+                       onMouseOut={e=>e.currentTarget.style.transform='scale(1)'}
+                     >
+                       <CheckCircle2 size={24}/>
+                     </button>
+                     <button 
+                       onClick={() => setMockCharities(mockCharities.filter(chr => chr.id !== c.id))} 
+                       style={{ color: '#ef4444', background: 'transparent', cursor: 'pointer', transition: 'all 0.2s' }} 
+                       onMouseOver={e=>e.currentTarget.style.transform='scale(1.2)'} 
+                       onMouseOut={e=>e.currentTarget.style.transform='scale(1)'}
+                     >
+                       <XCircle size={24}/>
+                     </button>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem' }}>
-                   <button style={{ color: '#10b981', background: 'transparent', transform: 'scale(1.2)' }}><CheckCircle2 size={24}/></button>
-                   <button style={{ color: '#ef4444', background: 'transparent', transform: 'scale(1.2)' }}><XCircle size={24}/></button>
-                </div>
-              </div>
+              ))}
             </div>
           )}
 
