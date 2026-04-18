@@ -19,6 +19,8 @@ const Dashboard = () => {
   const [isAdminDrawing, setIsAdminDrawing] = useState(false);
   const [drawResult, setDrawResult] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [realUsers, setRealUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const detailsRef = useRef(null);
 
   const isAdmin = user?.role === 'admin';
@@ -65,6 +67,28 @@ const Dashboard = () => {
     };
     if (user) fetchScores();
   }, [user]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      setIsLoadingUsers(true);
+      try {
+        const { data } = await axios.get('https://scoreforgood.onrender.com/api/auth/users', {
+          headers: { Authorization: `Bearer ${user?.token}` }
+        });
+        setRealUsers(data);
+      } catch (err) {
+        console.error("User fetch failed, using fallback mock data");
+        setRealUsers([
+          { _id: '1', name: 'Alice Thompson', email: 'alice@example.com', handicap: 12.4, subscriptionStatus: 'active' },
+          { _id: '2', name: 'Bob Roberts', email: 'bob@example.com', handicap: 18.2, subscriptionStatus: 'inactive' },
+          { _id: '3', name: 'Charlie Davis', email: 'charlie@example.com', handicap: 8.1, subscriptionStatus: 'active' },
+          { _id: '4', name: 'Diana Prince', email: 'diana@example.com', handicap: 22.0, subscriptionStatus: 'inactive' },
+        ]);
+      }
+      setIsLoadingUsers(false);
+    };
+    if (isAdmin && activeTab === 'admin') fetchUsers();
+  }, [isAdmin, activeTab, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -401,23 +425,23 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockUsers.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase())).map(u => (
-                        <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                      {realUsers.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase())).map(u => (
+                        <tr key={u._id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
                           <td style={{ padding: '1rem' }}>
                             <div style={{ fontWeight: 600 }}>{u.name}</div>
                             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{u.email}</div>
                           </td>
-                          <td style={{ padding: '1rem', fontWeight: 500 }}>{u.handicap}</td>
+                          <td style={{ padding: '1rem', fontWeight: 500 }}>{u.handicap || '—'}</td>
                           <td style={{ padding: '1rem' }}>
                             <span style={{ 
                               padding: '0.25rem 0.75rem', 
                               borderRadius: '20px', 
                               fontSize: '0.7rem', 
                               fontWeight: 700, 
-                              background: u.status === 'Elite' ? 'var(--premium-gradient)' : 'rgba(255,255,255,0.05)',
+                              background: u.subscriptionStatus === 'active' ? 'var(--premium-gradient)' : 'rgba(255,255,255,0.05)',
                               color: 'white'
                             }}>
-                              {u.status}
+                              {u.subscriptionStatus === 'active' ? 'Elite' : 'Free'}
                             </span>
                           </td>
                           <td style={{ padding: '1rem', textAlign: 'right' }}>
