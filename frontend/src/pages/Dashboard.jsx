@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
-import { Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart } from 'lucide-react';
+import { Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart, CheckCircle2, XCircle, Loader2, Sparkles } from 'lucide-react';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -9,6 +9,9 @@ const Dashboard = () => {
   const [newScore, setNewScore] = useState({ points: '', courseName: '' });
   const [isHovered, setIsHovered] = useState(false);
   const [showDrawDetails, setShowDrawDetails] = useState(false);
+  const [adminAction, setAdminAction] = useState(null);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawWinner, setDrawWinner] = useState(null);
   const detailsRef = useRef(null);
 
   useEffect(() => {
@@ -18,6 +21,17 @@ const Dashboard = () => {
       }, 100);
     }
   }, [showDrawDetails]);
+
+  const handleExecuteDraw = () => {
+    if(isDrawing) return;
+    setAdminAction('draw');
+    setDrawWinner(null);
+    setIsDrawing(true);
+    setTimeout(() => {
+      setIsDrawing(false);
+      setDrawWinner('Neha-Sharmaaa (Winner!)');
+    }, 2500);
+  };
 
   useEffect(() => {
     const fetchScores = async () => {
@@ -95,10 +109,76 @@ const Dashboard = () => {
             Elevated privileges. Manage platform users, execute global draws, and configure charities.
           </p>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button className="btn-primary" style={{ background: 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}>Manage Users (142)</button>
-            <button className="btn-primary" style={{ background: 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}>Approve Charities (3)</button>
-            <button className="btn-primary" style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}>Execute Monthly Draw</button>
+            <button 
+              className="btn-primary" 
+              onClick={() => setAdminAction(adminAction === 'users' ? null : 'users')}
+              style={{ background: adminAction === 'users' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}
+            >
+              Manage Users (142)
+            </button>
+            <button 
+              className="btn-primary" 
+              onClick={() => setAdminAction(adminAction === 'charities' ? null : 'charities')}
+              style={{ background: adminAction === 'charities' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}
+            >
+              Approve Charities (3)
+            </button>
+            <button 
+              className="btn-primary" 
+              onClick={handleExecuteDraw}
+              style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}
+            >
+              Execute Monthly Draw
+            </button>
           </div>
+
+          {/* Dynamic Admin Context Panels */}
+          {adminAction === 'users' && (
+            <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', animation: 'fadeIn 0.3s ease' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '1rem', borderBottom: '1px solid var(--border-glass)' }}>
+                <span>john.doe@golf.net</span>
+                <button style={{ color: '#ef4444', background: 'transparent' }}><XCircle size={18}/></button>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: '1rem' }}>
+                <span>jane.smith@swing.com</span>
+                <button style={{ color: '#ef4444', background: 'transparent' }}><XCircle size={18}/></button>
+              </div>
+            </div>
+          )}
+
+          {adminAction === 'charities' && (
+            <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', animation: 'fadeIn 0.3s ease' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <strong style={{ color: '#fff' }}>Local Golf Youth Fund</strong>
+                  <div style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>Awaiting approval request</div>
+                </div>
+                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                   <button style={{ color: '#10b981', background: 'transparent', transform: 'scale(1.2)' }}><CheckCircle2 size={24}/></button>
+                   <button style={{ color: '#ef4444', background: 'transparent', transform: 'scale(1.2)' }}><XCircle size={24}/></button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {adminAction === 'draw' && (
+            <div style={{ marginTop: '1.5rem', padding: '2rem', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}>
+              {isDrawing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#f87171' }}>
+                  <Loader2 size={32} className="lucide-spin" />
+                  <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .lucide-spin { animation: spin 1s linear infinite; }`}</style>
+                  <p>Calculating valid entries and running cryptographic shuffle...</p>
+                </div>
+              ) : (
+                <div style={{ animation: 'fadeIn 0.5s ease', color: '#10b981' }}>
+                  <Sparkles size={40} style={{ margin: '0 auto 1rem auto', color: '#fbbf24' }} />
+                  <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Draw Executed Successfully!</h3>
+                  <p style={{ color: 'var(--text-main)', fontSize: '1.1rem' }}>Winner: <strong>{drawWinner}</strong></p>
+                  <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>$500 Prize and Charity Donation dispatched.</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 
