@@ -1,10 +1,11 @@
-import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { LogOut, Club } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { LogOut, Club, Sun, Moon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,6 +20,15 @@ const Navbar = () => {
         <span>ScoreForGood</span>
       </Link>
       <div className="navbar-links">
+        <button 
+          className="btn-logout" 
+          onClick={toggleTheme} 
+          style={{ marginRight: '1rem' }}
+          aria-label="Toggle Theme"
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {user ? (
           <>
             <span style={{ display: 'flex', alignItems: 'center', fontWeight: '500', color: 'var(--text-muted)' }}>
