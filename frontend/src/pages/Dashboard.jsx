@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart } from 'lucide-react';
@@ -9,6 +9,15 @@ const Dashboard = () => {
   const [newScore, setNewScore] = useState({ points: '', courseName: '' });
   const [isHovered, setIsHovered] = useState(false);
   const [showDrawDetails, setShowDrawDetails] = useState(false);
+  const detailsRef = useRef(null);
+
+  useEffect(() => {
+    if (showDrawDetails && detailsRef.current) {
+      setTimeout(() => {
+        detailsRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }, 100);
+    }
+  }, [showDrawDetails]);
 
   useEffect(() => {
     const fetchScores = async () => {
@@ -211,7 +220,7 @@ const Dashboard = () => {
 
       {/* Expandable Draw Details Panel */}
       {showDrawDetails && (
-        <div style={{ padding: '2rem', marginTop: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', animation: 'fadeIn 0.3s ease-out' }}>
+        <div ref={detailsRef} style={{ padding: '2rem', marginTop: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', animation: 'fadeIn 0.3s ease-out' }}>
           <h4 style={{ color: '#3b82f6', marginBottom: '0.75rem', fontSize: '1.2rem' }}>🎉 Upcoming Draw Status</h4>
           <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: '1.6' }}>
             The next monthly draw occurs on the last Friday of this month. By actively tracking {scores.length} rounds, you have successfully secured {scores.length} entries into the raffle pool! Good luck!
