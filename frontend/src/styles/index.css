@@ -14,7 +14,6 @@
   --radius: 20px;
   --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
   --nav-bg: rgba(11, 15, 25, 0.7);
   --card-bg: rgba(255, 255, 255, 0.03);
   --input-bg: rgba(0, 0, 0, 0.2);
