@@ -40,7 +40,10 @@ const Navbar = () => {
             </button>
           </>
         ) : (
-          <Link to="/login" className="btn-primary">Sign In</Link>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <Link to="/login" style={{ color: 'var(--text-muted)', fontWeight: '500', alignSelf: 'center' }}>Sign In</Link>
+            <Link to="/login" className="btn-primary">Sign Up</Link>
+          </div>
         )}
       </div>
     </nav>
