@@ -283,7 +283,7 @@ const Dashboard = () => {
               <p style={{ fontSize: '0.9rem' }}>Log your first score to see it here!</p>
             </div>
           ) : (
-            <div className="score-list" style={{ overflowY: 'auto', flex: 1, paddingRight: '0.5rem' }}>
+            <div className="score-list" style={{ overflowY: 'scroll', flex: 1, paddingRight: '0.5rem' }}>
               {scores.map((score, idx) => (
                 <div 
                   key={score._id} 

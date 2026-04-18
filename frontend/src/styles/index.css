@@ -343,15 +343,15 @@ button {
 }
 
 .score-list::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.05); /* Slightly more visible track */
   border-radius: 10px;
   margin: 5px 0;
 }
 
 .score-list::-webkit-scrollbar-thumb {
-  background: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.6); /* Increased opacity */
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .score-list::-webkit-scrollbar-thumb:hover {
