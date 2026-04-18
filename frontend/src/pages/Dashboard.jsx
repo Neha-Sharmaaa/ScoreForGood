@@ -1,52 +1,36 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
-import { Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart, CheckCircle2, XCircle, Loader2, Sparkles, PartyPopper } from 'lucide-react';
+import { 
+  Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart, 
+  CheckCircle2, XCircle, Loader2, Sparkles, PartyPopper,
+  LayoutDashboard, History, Settings, Users, Gift, HelpCircle
+} from 'lucide-react';
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const location = useLocation();
   const [scores, setScores] = useState([]);
   const [newScore, setNewScore] = useState({ points: '', courseName: '' });
-  const [isHovered, setIsHovered] = useState(false);
   const [showDrawDetails, setShowDrawDetails] = useState(false);
   const [adminAction, setAdminAction] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawWinner, setDrawWinner] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [mockUsers, setMockUsers] = useState([]);
   const [mockCharities, setMockCharities] = useState([
     { id: 1, name: 'Local Golf Youth Fund', status: 'Awaiting approval request' }
   ]);
   const detailsRef = useRef(null);
 
+  // Check for success param after payment
   useEffect(() => {
-    if (showDrawDetails && detailsRef.current) {
-      setTimeout(() => {
-        detailsRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }, 100);
+    const params = new URLSearchParams(location.search);
+    if (params.get('success')) {
+      setShowSuccessModal(true);
     }
-  }, [showDrawDetails]);
-
-  // Load live user sessions dynamically when Admin opens User Management panel
-  useEffect(() => {
-    if (adminAction === 'users') {
-      setMockUsers([
-        { id: 999, email: user?.email || 'admin@scoreforgood.com' }, 
-        { id: 1, email: 'neha.k@adypu.edu.in' },
-        { id: 2, email: 'hiring.manager@techcompany.com' }
-      ]);
-    }
-  }, [adminAction, user]);
-
-  const handleExecuteDraw = () => {
-    if(isDrawing) return;
-    setAdminAction('draw');
-    setDrawWinner(null);
-    setIsDrawing(true);
-    setTimeout(() => {
-      setIsDrawing(false);
-      setDrawWinner('Neha-Sharmaaa (Winner!)');
-    }, 2500);
-  };
+  }, [location]);
 
   useEffect(() => {
     const fetchScores = async () => {
@@ -56,7 +40,6 @@ const Dashboard = () => {
         });
         setScores(data);
       } catch (err) {
-        // Advanced Mock Data Fallback
         setScores([
           { _id: '1', courseName: 'Pebble Beach Golf Links', points: 38, date: new Date().toISOString() },
           { _id: '2', courseName: 'Augusta National', points: 41, date: new Date(Date.now() - 86400000).toISOString() },
@@ -76,7 +59,6 @@ const Dashboard = () => {
       });
       setScores([data, ...scores]);
     } catch (err) {
-      // Mock score addition
       const mockScore = { 
         ...newScore, 
         _id: Math.random().toString(36).substr(2, 9), 
@@ -87,283 +69,204 @@ const Dashboard = () => {
     setNewScore({ points: '', courseName: '' });
   };
 
-  // Stats Calculations
   const averageScore = scores.length ? (scores.reduce((a, b) => a + Number(b.points), 0) / scores.length).toFixed(1) : 0;
   const bestScore = scores.length ? Math.max(...scores.map(s => Number(s.points))) : 0;
 
   return (
-    <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+    <div style={{ display: 'flex', minHeight: 'calc(100vh - 80px)', animation: 'fadeIn 0.5s ease-out' }}>
       
-      {/* Header Section */}
-      <div className="dashboard-header">
-        <div>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            Welcome back, {user?.name.split(' ')[0] || 'Golfer'}! <Sparkles color="#fbbf24" size={28} />
-          </h1>
-          <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem', fontSize: '1.1rem' }}>
-            Ready to log your latest achievements?
-          </p>
-        </div>
+      {/* Sidebar - BirdiePay Style */}
+      <div style={{ 
+        width: '260px', 
+        borderRight: '1px solid var(--border-glass)',
+        padding: '2rem 1.5rem',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '0.5rem'
+      }}>
+        <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', paddingLeft: '0.75rem' }}>Menu</div>
         
-        {user?.subscriptionStatus === 'active' ? (
-           <div className="status-badge" style={{ padding: '0.75rem 1.25rem' }}>
-             <Trophy size={18} /> Active Premium Member
-           </div>
-        ) : (
-           <button className="btn-primary" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-             Upgrade Plan <ArrowRight size={18} />
-           </button>
+        <SidebarLink icon={<LayoutDashboard size={20}/>} label="Dashboard" active />
+        <SidebarLink icon={<History size={20}/>} label="History" />
+        <SidebarLink icon={<Gift size={20}/>} label="Prize Draws" />
+        <SidebarLink icon={<Heart size={20}/>} label="My Charity" />
+        
+        <div style={{ marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', paddingLeft: '0.75rem' }}>Settings</div>
+        <SidebarLink icon={<Settings size={20}/>} label="Account" />
+        <SidebarLink icon={<HelpCircle size={20}/>} label="Support" />
+
+        {/* Premium Upgrade CTA in Sidebar */}
+        <div style={{ marginTop: 'auto', padding: '1.5rem', background: 'var(--premium-gradient)', borderRadius: '16px', color: 'white' }}>
+          <Crown size={24} style={{ marginBottom: '0.5rem' }} />
+          <div style={{ fontWeight: 700, marginBottom: '0.25rem' }}>BIRDIE PRO</div>
+          <p style={{ fontSize: '0.8rem', opacity: 0.9, marginBottom: '1rem' }}>Enter 10x more draws & get pro analytics.</p>
+          <Link to="/pricing" style={{ 
+            display: 'block', 
+            textAlign: 'center', 
+            background: 'white', 
+            color: 'var(--secondary)', 
+            padding: '0.5rem', 
+            borderRadius: '8px', 
+            fontWeight: 700, 
+            fontSize: '0.85rem' 
+          }}>Upgrade Now</Link>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div style={{ flex: 1, padding: '2.5rem 3rem', overflowY: 'auto' }}>
+        
+        {/* Success Modal */}
+        {showSuccessModal && (
+          <div className="loader-overlay" style={{ zIndex: 2000 }}>
+             <div className="card" style={{ maxWidth: '400px', textAlign: 'center', borderColor: 'var(--primary)' }}>
+                <Sparkles size={48} color="var(--primary)" style={{ margin: '0 auto 1.5rem' }} />
+                <h2 style={{ marginBottom: '1rem' }}>Welcome to Elite!</h2>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Your subscription is confirmed. You now have 12 tickets in every monthly draw!</p>
+                <button className="btn-primary" style={{ width: '100%' }} onClick={() => setShowSuccessModal(false)}>Get Started</button>
+             </div>
+          </div>
         )}
-      </div>
 
-      {/* Admin Privilege Panel */}
-      {user?.role === 'admin' && (
-        <div className="card" style={{ marginBottom: '2.5rem', borderColor: 'var(--primary)', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontSize: '1.25rem' }}>
-            System Administrator Panel
-          </h3>
-          <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
-            Elevated privileges. Manage platform users, execute global draws, and configure charities.
-          </p>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button 
-              className="btn-primary" 
-              onClick={() => setAdminAction(adminAction === 'users' ? null : 'users')}
-              style={{ background: adminAction === 'users' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}
-            >
-              Manage Users (142)
-            </button>
-            <button 
-              className="btn-primary" 
-              onClick={() => setAdminAction(adminAction === 'charities' ? null : 'charities')}
-              style={{ background: adminAction === 'charities' ? 'rgba(59, 130, 246, 0.2)' : 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}
-            >
-              Approve Charities (3)
-            </button>
-            <button 
-              className="btn-primary" 
-              onClick={handleExecuteDraw}
-              style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}
-            >
-              Execute Monthly Draw
-            </button>
+        <div className="dashboard-header">
+          <div>
+            <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '2.5rem' }}>
+              Welcome back, {user?.name.split(' ')[0] || 'Golfer'}! <Sparkles color="#fbbf24" size={32} />
+            </h1>
+            <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Your current handicap rank is <strong style={{ color: 'var(--primary)' }}>Top 15%</strong></p>
+          </div>
+          
+          <div style={{ display: 'flex', gap: '1rem' }}>
+            <div className="status-badge" style={{ padding: '0.75rem 1.25rem', background: 'rgba(99, 102, 241, 0.1)', borderColor: 'var(--secondary)', color: 'var(--secondary)' }}>
+                <Users size={18} /> Community Rank: #42
+            </div>
+            {user?.subscriptionStatus === 'active' || showSuccessModal ? (
+              <div className="status-badge" style={{ padding: '0.75rem 1.25rem', background: 'var(--premium-gradient)', border: 'none', color: 'white' }}>
+                <Crown size={18} /> Elite Member
+              </div>
+            ) : (
+              <Link to="/pricing" className="btn-primary" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', background: 'var(--premium-gradient)', border: 'none' }}>
+                Go Elite <Crown size={18} />
+              </Link>
+            )}
+          </div>
+        </div>
+
+        {/* Analytics Row */}
+        <div className="stats-row">
+          <StatCard icon={<Target size={24} />} title="Total Rounds" value={scores.length} color="var(--primary)" />
+          <StatCard icon={<TrendingUp size={24} />} title="Avg. Stableford" value={averageScore} color="var(--secondary)" />
+          <StatCard icon={<Trophy size={24} />} title="Personal Best" value={bestScore} color="#fbbf24" />
+        </div>
+
+        <div className="dashboard-grid">
+          {/* Main Card: Charity Impact Slider */}
+          <div className="card" style={{ gridColumn: 'span 2', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+               <div>
+                  <h3 style={{ fontSize: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <Heart color="#ef4444" fill="#ef4444" size={24} /> Your Positive Impact
+                  </h3>
+                  <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Every point you log contributes to Global Golf Foundation.</p>
+               </div>
+               <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)' }}>£142.50</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Total Donated</div>
+               </div>
+            </div>
+            
+            <div style={{ marginBottom: '1rem' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.5rem' }}>
+                  <span>Monthly Goal Progress</span>
+                  <span style={{ fontWeight: 700 }}>85%</span>
+               </div>
+               <div style={{ height: '8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px', overflow: 'hidden' }}>
+                  <div style={{ width: '85%', height: '100%', background: 'var(--primary)', boxShadow: '0 0 10px var(--primary-glow)' }}></div>
+               </div>
+            </div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>You're only 3.5 points away from unlocking the next charity multiplier!</p>
           </div>
 
-          {/* Dynamic Admin Context Panels */}
-          {adminAction === 'users' && (
-            <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', animation: 'fadeIn 0.3s ease' }}>
-              {mockUsers.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>All users managed successfully.</p> : mockUsers.map((u, idx) => (
-                <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: idx === mockUsers.length - 1 ? '0' : '1rem', paddingTop: idx === 0 ? '0' : '1rem', borderBottom: idx === mockUsers.length - 1 ? 'none' : '1px solid var(--border-glass)' }}>
-                  <span>{u.email}</span>
-                  <button 
-                    onClick={() => setMockUsers(mockUsers.filter(usr => usr.id !== u.id))} 
-                    style={{ color: '#ef4444', background: 'transparent', cursor: 'pointer', transition: 'all 0.2s' }}
-                    onMouseOver={e=>e.currentTarget.style.transform='scale(1.2)'} 
-                    onMouseOut={e=>e.currentTarget.style.transform='scale(1)'}
-                  >
-                    <XCircle size={18}/>
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Quick Log */}
+          <div className="card">
+            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Calendar size={20} color="var(--primary)"/> Log Score
+            </h3>
+            <form onSubmit={handleSubmit}>
+              <div className="input-group">
+                <input type="text" placeholder="Course Name" required value={newScore.courseName} onChange={e => setNewScore({...newScore, courseName: e.target.value})} />
+              </div>
+              <div className="input-group">
+                <input type="number" placeholder="Stableford Points" min="0" max="100" required value={newScore.points} onChange={e => setNewScore({...newScore, points: e.target.value})} />
+              </div>
+              <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1rem' }}>Publish Round</button>
+            </form>
+          </div>
 
-          {adminAction === 'charities' && (
-            <div style={{ marginTop: '1.5rem', padding: '1.5rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', border: '1px solid var(--border-glass)', animation: 'fadeIn 0.3s ease' }}>
-              {mockCharities.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>No pending charity requests.</p> : mockCharities.map((c) => (
-                <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div>
-                    <strong style={{ color: '#fff' }}>{c.name}</strong>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--primary)' }}>{c.status}</div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                     <button 
-                       onClick={() => setMockCharities(mockCharities.filter(chr => chr.id !== c.id))} 
-                       style={{ color: '#10b981', background: 'transparent', cursor: 'pointer', transition: 'all 0.2s' }} 
-                       onMouseOver={e=>e.currentTarget.style.transform='scale(1.2)'} 
-                       onMouseOut={e=>e.currentTarget.style.transform='scale(1)'}
-                     >
-                       <CheckCircle2 size={24}/>
-                     </button>
-                     <button 
-                       onClick={() => setMockCharities(mockCharities.filter(chr => chr.id !== c.id))} 
-                       style={{ color: '#ef4444', background: 'transparent', cursor: 'pointer', transition: 'all 0.2s' }} 
-                       onMouseOver={e=>e.currentTarget.style.transform='scale(1.2)'} 
-                       onMouseOut={e=>e.currentTarget.style.transform='scale(1)'}
-                     >
-                       <XCircle size={24}/>
-                     </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {adminAction === 'draw' && (
-            <div style={{ marginTop: '1.5rem', padding: '2rem', background: 'rgba(239, 68, 68, 0.05)', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)', textAlign: 'center', animation: 'fadeIn 0.3s ease' }}>
-              {isDrawing ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', color: '#f87171' }}>
-                  <Loader2 size={32} className="lucide-spin" />
-                  <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .lucide-spin { animation: spin 1s linear infinite; }`}</style>
-                  <p>Calculating valid entries and running cryptographic shuffle...</p>
-                </div>
-              ) : (
-                <div style={{ animation: 'fadeIn 0.5s ease', color: '#10b981' }}>
-                  <Sparkles size={40} style={{ margin: '0 auto 1rem auto', color: '#fbbf24' }} />
-                  <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Draw Executed Successfully!</h3>
-                  <p style={{ color: 'var(--text-main)', fontSize: '1.1rem' }}>Winner: <strong>{drawWinner}</strong></p>
-                  <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>$500 Prize and Charity Donation dispatched.</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Analytics Row */}
-      <div className="stats-row">
-        <div className="stat-card">
-          <Target className="stat-icon" size={100} color="var(--primary)" />
-          <h4>Total Rounds</h4>
-          <span className="value">{scores.length}</span>
-        </div>
-        <div className="stat-card">
-          <TrendingUp className="stat-icon" size={100} color="var(--secondary)" />
-          <h4>Avg. Stableford</h4>
-          <span className="value">{averageScore}</span>
-        </div>
-        <div className="stat-card">
-          <Trophy className="stat-icon" size={100} color="#fbbf24" />
-          <h4>Personal Best</h4>
-          <span className="value">{bestScore}</span>
-        </div>
-      </div>
-
-      {/* Main Grid */}
-      <div className="dashboard-grid">
-        {/* Left Column: Form */}
-        <div className="card" style={{ position: 'relative', height: 'fit-content' }}>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Calendar size={20} color="var(--primary)"/> Log New Score
-          </h3>
-          <form onSubmit={handleSubmit}>
-            <div className="input-group">
-              <label>Course Name</label>
-              <input 
-                type="text" 
-                placeholder="e.g., TPC Sawgrass"
-                required 
-                value={newScore.courseName}
-                onChange={e => setNewScore({...newScore, courseName: e.target.value})}
-              />
-            </div>
-            <div className="input-group">
-              <label>Points Scored (Stableford)</label>
-              <input 
-                type="number" 
-                placeholder="0 - 50"
-                min="0"
-                max="100"
-                required 
-                value={newScore.points}
-                onChange={e => setNewScore({...newScore, points: e.target.value})}
-              />
-            </div>
-            <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-              Publish Score
-            </button>
-          </form>
-        </div>
-
-        {/* Right Column: List */}
-        <div className="card" style={{ height: 'fit-content', maxHeight: '450px', display: 'flex', flexDirection: 'column' }}>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', flexShrink: 0 }}>Score History</h3>
-          {scores.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-muted)' }}>
-              <Trophy size={48} opacity={0.2} style={{ marginBottom: '1rem' }} />
-              <p>Your history is empty.</p>
-              <p style={{ fontSize: '0.9rem' }}>Log your first score to see it here!</p>
-            </div>
-          ) : (
-            <div className="score-list" style={{ overflowY: 'scroll', flex: 1, paddingRight: '0.5rem' }}>
+          {/* History */}
+          <div className="card" style={{ maxHeight: '450px', display: 'flex', flexDirection: 'column' }}>
+            <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Recent Rounds</h3>
+            <div className="score-list" style={{ overflowY: 'auto', flex: 1 }}>
               {scores.map((score, idx) => (
-                <div 
-                  key={score._id} 
-                  className="score-item"
-                  style={{ animationDelay: `${idx * 0.1}s` }}
-                >
-                  <div>
-                    <div className="score-course">{score.courseName}</div>
-                    <div className="score-date">
-                      {new Date(score.date).toLocaleDateString(undefined, {
-                        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
-                      })}
+                <div key={score._id} className="score-item" style={{ animationDelay: `${idx * 0.1}s`, padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>{score.courseName}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(score.date).toLocaleDateString()}</div>
                     </div>
-                  </div>
-                  <div className="score-points">
-                    {score.points} <span style={{ fontSize: '0.8rem', opacity: 0.8 }}>pts</span>
+                    <div style={{ color: 'var(--primary)', fontWeight: 800, fontSize: '1.2rem' }}>{score.points} <small style={{ fontSize: '0.7rem' }}>PTS</small></div>
                   </div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Exclusive Monthly Charity Draw Section */}
-      <div 
-        className="charity-banner"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        style={{ transform: isHovered ? 'scale(1.02)' : 'scale(1)', transition: 'var(--transition)' }}
-      >
-        <div className="charity-content">
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Heart color="#ef4444" fill={isHovered ? "#ef4444" : "transparent"} size={24} style={{ transition: 'var(--transition)' }}/>
-            ScoreForGood Monthly Draw
-          </h3>
-          <p>
-            You have {scores.length} qualifying entries for this month's premium draw! 
-            Portion of subscription is actively going to your default charity.
-          </p>
-        </div>
-        <button 
-          className="btn-primary" 
-          onClick={() => setShowDrawDetails(!showDrawDetails)}
-          style={{ background: '#3b82f6', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)' }}
-        >
-          {showDrawDetails ? 'Hide Details' : 'View Details'}
-        </button>
-      </div>
-
-      {/* Expandable Draw Details Panel */}
-      {showDrawDetails && (
-        <div ref={detailsRef} style={{ padding: '2rem', marginTop: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', animation: 'fadeIn 0.3s ease-out' }}>
-          <h4 style={{ color: '#3b82f6', marginBottom: '0.75rem', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <PartyPopper size={20} /> Upcoming Draw Status
-          </h4>
-          <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: '1.6' }}>
-            The next monthly draw occurs on the last Friday of this month. By actively tracking {scores.length} rounds, you have successfully secured {scores.length} entries into the raffle pool! Good luck!
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', fontSize: '0.95rem' }}>
-             <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px' }}>
-               <strong style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Prize Pool</strong>
-               <span style={{ fontSize: '1.1rem', color: '#fff', fontWeight: '600' }}>$500 Pro Shop Voucher</span>
-             </div>
-             <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px' }}>
-               <strong style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Your Supported Charity</strong>
-               <span style={{ fontSize: '1.1rem', color: '#fff', fontWeight: '600' }}>Global Golf Foundation</span>
-             </div>
-             <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px' }}>
-               <strong style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Win Probability</strong>
-               <span style={{ fontSize: '1.1rem', color: 'var(--primary)', fontWeight: '600' }}>High ({scores.length} Tickets)</span>
-             </div>
           </div>
         </div>
-      )}
-
+      </div>
     </div>
   );
 };
 
+const SidebarLink = ({ icon, label, active }) => (
+  <div style={{ 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '1rem', 
+    padding: '0.85rem 1rem', 
+    borderRadius: '12px', 
+    cursor: 'pointer',
+    background: active ? 'rgba(99, 102, 241, 0.1)' : 'transparent',
+    color: active ? 'var(--secondary)' : 'var(--text-muted)',
+    fontWeight: active ? 700 : 500,
+    transition: 'var(--transition)'
+  }}
+  onMouseOver={e => !active && (e.currentTarget.style.background = 'rgba(255,255,255,0.03)')}
+  onMouseOut={e => !active && (e.currentTarget.style.background = 'transparent')}
+  >
+    {icon}
+    <span>{label}</span>
+  </div>
+);
+
+const StatCard = ({ icon, title, value, color }) => (
+  <div className="card" style={{ padding: '1.5rem', flex: 1, display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+    <div style={{ 
+      width: '50px', 
+      height: '50px', 
+      borderRadius: '12px', 
+      background: `${color}15`, 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      color: color
+    }}>
+      {icon}
+    </div>
+    <div>
+      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>{title}</div>
+      <div style={{ fontSize: '1.75rem', fontWeight: 800 }}>{value}</div>
+    </div>
+  </div>
+);
+
 export default Dashboard;
+

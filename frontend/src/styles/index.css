@@ -3,15 +3,18 @@
 :root {
   --primary: #10b981; /* Emerald */
   --primary-glow: rgba(16, 185, 129, 0.4);
-  --secondary: #3b82f6; /* Blue */
-  --bg-dark: #0b0f19;
-  --bg-panel: rgba(255, 255, 255, 0.03);
+  --secondary: #6366f1; /* BirdiePay Indigo */
+  --accent-purple: #8b5cf6; /* BirdiePay Purple */
+  --premium-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  --bg-dark: #0b0e14; /* BirdiePay Deep Dark */
+  --bg-panel: rgba(255, 255, 255, 0.04);
   --border-glass: rgba(255, 255, 255, 0.08);
-  --text-main: #f8fafc;
+  --text-main: #ffffff;
   --text-muted: #94a3b8;
-  --radius: 16px;
-  --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --radius: 20px;
+  --shadow-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
   --nav-bg: rgba(11, 15, 25, 0.7);
   --card-bg: rgba(255, 255, 255, 0.03);
   --input-bg: rgba(0, 0, 0, 0.2);
@@ -72,10 +75,8 @@ button {
 
 .main-content {
   flex: 1;
-  padding: 3rem 2rem;
-  max-width: 1300px;
-  margin: 0 auto;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
   animation: fadeIn 0.8s ease-out forwards;
 }
 
@@ -119,14 +120,14 @@ button {
 
 /* Buttons */
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, #059669 100%);
+  background: var(--premium-gradient);
   color: white;
   padding: 0.85rem 1.75rem;
   border-radius: 30px;
   font-weight: 600;
   font-size: 1rem;
   transition: var(--transition);
-  box-shadow: 0 4px 15px var(--primary-glow);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
   position: relative;
   overflow: hidden;
 }

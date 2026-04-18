@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const scoreRoutes = require('./routes/scoreRoutes');
 const charityRoutes = require('./routes/charityRoutes');
+const stripeRoutes = require('./routes/stripeRoutes');
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/scores', scoreRoutes);
 app.use('/api/charities', charityRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 // Base route for testing
 app.get('/', (req, res) => {

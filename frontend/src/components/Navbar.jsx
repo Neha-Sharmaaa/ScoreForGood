@@ -20,6 +20,7 @@ const Navbar = () => {
         <span>ScoreForGood</span>
       </Link>
       <div className="navbar-links">
+        <Link to="/pricing" style={{ color: 'var(--text-muted)', fontWeight: '500', marginRight: '0.5rem' }}>Pricing</Link>
         <button 
           className="btn-logout" 
           onClick={toggleTheme} 
