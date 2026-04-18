@@ -85,8 +85,7 @@ const Pricing = () => {
               onClick={() => handleSubscribe(plan.name)}
               style={{ 
                 width: '100%', 
-                background: plan.premium ? 'var(--premium-gradient)' : 'var(--bg-panel)',
-                border: plan.premium ? 'none' : '1px solid var(--border-glass)',
+                background: plan.premium ? 'var(--premium-gradient)' : 'var(--primary)',
                 color: '#fff'
               }}
             >

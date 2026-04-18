@@ -126,7 +126,7 @@ const Dashboard = () => {
             <div className="dashboard-header">
               <div>
                 <h1 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '2.5rem' }}>
-                  Welcome back, {user?.name?.split(' ')[0] || 'Golfer'}! <Sparkles color="#fbbf24" size={32} />
+                  Welcome back, {user?.name?.split(' ')[0] || 'Golfer'}!
                 </h1>
                 <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', fontSize: '1.1rem' }}>Your current handicap rank is <strong style={{ color: 'var(--primary)' }}>Top 15%</strong></p>
               </div>
