@@ -8,6 +8,7 @@ const Dashboard = () => {
   const [scores, setScores] = useState([]);
   const [newScore, setNewScore] = useState({ points: '', courseName: '' });
   const [isHovered, setIsHovered] = useState(false);
+  const [showDrawDetails, setShowDrawDetails] = useState(false);
 
   useEffect(() => {
     const fetchScores = async () => {
@@ -74,6 +75,23 @@ const Dashboard = () => {
            </button>
         )}
       </div>
+
+      {/* Admin Privilege Panel */}
+      {user?.role === 'admin' && (
+        <div className="card" style={{ marginBottom: '2.5rem', borderColor: 'var(--primary)', background: 'linear-gradient(145deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%)' }}>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)', fontSize: '1.25rem' }}>
+            System Administrator Panel
+          </h3>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
+            Elevated privileges. Manage platform users, execute global draws, and configure charities.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <button className="btn-primary" style={{ background: 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}>Manage Users (142)</button>
+            <button className="btn-primary" style={{ background: 'var(--bg-panel)', color: 'var(--text-main)', border: '1px solid var(--border-glass)' }}>Approve Charities (3)</button>
+            <button className="btn-primary" style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}>Execute Monthly Draw</button>
+          </div>
+        </div>
+      )}
 
       {/* Analytics Row */}
       <div className="stats-row">
@@ -182,10 +200,38 @@ const Dashboard = () => {
             Portion of subscription is actively going to your default charity.
           </p>
         </div>
-        <button className="btn-primary" style={{ background: '#3b82f6', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)' }}>
-          View Details
+        <button 
+          className="btn-primary" 
+          onClick={() => setShowDrawDetails(!showDrawDetails)}
+          style={{ background: '#3b82f6', boxShadow: '0 4px 15px rgba(59, 130, 246, 0.4)' }}
+        >
+          {showDrawDetails ? 'Hide Details' : 'View Details'}
         </button>
       </div>
+
+      {/* Expandable Draw Details Panel */}
+      {showDrawDetails && (
+        <div style={{ padding: '2rem', marginTop: '1rem', background: 'rgba(59, 130, 246, 0.05)', borderRadius: '16px', border: '1px solid rgba(59, 130, 246, 0.2)', animation: 'fadeIn 0.3s ease-out' }}>
+          <h4 style={{ color: '#3b82f6', marginBottom: '0.75rem', fontSize: '1.2rem' }}>🎉 Upcoming Draw Status</h4>
+          <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', lineHeight: '1.6' }}>
+            The next monthly draw occurs on the last Friday of this month. By actively tracking {scores.length} rounds, you have successfully secured {scores.length} entries into the raffle pool! Good luck!
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', fontSize: '0.95rem' }}>
+             <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px' }}>
+               <strong style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Prize Pool</strong>
+               <span style={{ fontSize: '1.1rem', color: '#fff', fontWeight: '600' }}>$500 Pro Shop Voucher</span>
+             </div>
+             <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px' }}>
+               <strong style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Your Supported Charity</strong>
+               <span style={{ fontSize: '1.1rem', color: '#fff', fontWeight: '600' }}>Global Golf Foundation</span>
+             </div>
+             <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-glass)', padding: '1rem', borderRadius: '12px' }}>
+               <strong style={{ display: 'block', color: 'var(--text-muted)', fontSize: '0.8rem', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Win Probability</strong>
+               <span style={{ fontSize: '1.1rem', color: 'var(--primary)', fontWeight: '600' }}>High ({scores.length} Tickets)</span>
+             </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

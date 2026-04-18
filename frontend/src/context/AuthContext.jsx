@@ -25,10 +25,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.warn("MongoDB is offline – falling back to mocked user!");
       const mockUser = {
-        _id: "123mock456",
-        name: "Demo User",
+        _id: email.includes("admin") ? "999admin" : "123mock456",
+        name: email.includes("admin") ? "System Admin" : "Demo Golfer",
         email: email,
-        role: "user",
+        role: email.includes("admin") ? "admin" : "user",
         subscriptionStatus: "active",
         token: "mock-token-xyz"
       };
