@@ -5,7 +5,8 @@ import axios from 'axios';
 import { 
   Target, Trophy, TrendingUp, Calendar, ArrowRight, Heart, 
   CheckCircle2, XCircle, Loader2, Sparkles, PartyPopper,
-  LayoutDashboard, History, Settings, Users, Gift, HelpCircle, Crown
+  LayoutDashboard, History, Settings, Users, Gift, HelpCircle, Crown,
+  ShieldAlert, UserCog, Gavel, BarChart3, Search, Trash2, CheckSquare
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -15,7 +16,29 @@ const Dashboard = () => {
   const [newScore, setNewScore] = useState({ points: '', courseName: '' });
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isAdminDrawing, setIsAdminDrawing] = useState(false);
+  const [drawResult, setDrawResult] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const detailsRef = useRef(null);
+
+  const isAdmin = user?.role === 'admin';
+
+  const mockUsers = [
+    { id: 1, name: 'Alice Thompson', email: 'alice@example.com', handicap: 12.4, status: 'Elite' },
+    { id: 2, name: 'Bob Roberts', email: 'bob@example.com', handicap: 18.2, status: 'Free' },
+    { id: 3, name: 'Charlie Davis', email: 'charlie@example.com', handicap: 8.1, status: 'Elite' },
+    { id: 4, name: 'Diana Prince', email: 'diana@example.com', handicap: 22.0, status: 'Free' },
+  ];
+
+  const handleSimulateDraw = () => {
+    setIsAdminDrawing(true);
+    setDrawResult(null);
+    setTimeout(() => {
+      setIsAdminDrawing(false);
+      const winner = mockUsers[Math.floor(Math.random() * mockUsers.length)];
+      setDrawResult(winner);
+    }, 3000);
+  };
 
   // Check for success param after payment
   useEffect(() => {
@@ -84,6 +107,13 @@ const Dashboard = () => {
         <SidebarLink icon={<Gift size={20}/>} label="Prize Draws" active={activeTab === 'draws'} onClick={() => setActiveTab('draws')} />
         <SidebarLink icon={<Heart size={20}/>} label="My Charity" active={activeTab === 'charity'} onClick={() => setActiveTab('charity')} />
         
+        {isAdmin && (
+          <>
+            <div style={{ marginTop: '2rem', color: 'var(--accent-purple)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', paddingLeft: '0.75rem' }}>Admin Portal</div>
+            <SidebarLink icon={<ShieldAlert size={20}/>} label="Command Center" active={activeTab === 'admin'} onClick={() => setActiveTab('admin')} />
+          </>
+        )}
+
         <div style={{ marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '1rem', paddingLeft: '0.75rem' }}>Settings</div>
         <SidebarLink icon={<Settings size={20}/>} label="Account" active={activeTab === 'account'} onClick={() => setActiveTab('account')} />
         <SidebarLink icon={<HelpCircle size={20}/>} label="Support" active={activeTab === 'support'} onClick={() => setActiveTab('support')} />
@@ -284,6 +314,123 @@ const Dashboard = () => {
             <h2 style={{ marginBottom: '1rem' }}>Need Help?</h2>
             <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Our team is here to support your mission for good.</p>
             <button className="btn-primary" onClick={() => window.location.href = 'mailto:support@scoreforgood.com?subject=Support Request - ScoreForGood'}>Contact Support</button>
+          </div>
+        )}
+
+        {activeTab === 'admin' && isAdmin && (
+          <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+            <div className="dashboard-header">
+              <h1>Admin Command Center</h1>
+              <div className="status-badge" style={{ background: 'rgba(139, 92, 246, 0.1)', borderColor: 'var(--accent-purple)', color: 'var(--accent-purple)' }}>
+                <Gavel size={18} /> System Privileges Enabled
+              </div>
+            </div>
+
+            {/* Global Metrics */}
+            <div className="stats-row">
+              <StatCard icon={<Users size={24} />} title="Total Users" value="1,284" color="var(--primary)" />
+              <StatCard icon={<BarChart3 size={24} />} title="Platform Rounds" value="12,402" color="var(--secondary)" />
+              <StatCard icon={<Heart size={24} />} title="Total Donations" value="£42,500" color="#ef4444" />
+            </div>
+
+            <div className="dashboard-grid">
+              {/* Prize Draw Controller */}
+              <div className="card" style={{ gridColumn: 'span 2', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%)' }}>
+                <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Gift color="var(--accent-purple)" size={24} /> Monthly Prize Draw Engine
+                </h3>
+                
+                <div style={{ display: 'flex', gap: '2rem', alignItems: 'center' }}>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+                      Execute the monthly draw logic. This will randomly select a winner from the pool of eligible participants based on their points/entries.
+                    </p>
+                    <button 
+                      className="btn-primary" 
+                      onClick={handleSimulateDraw}
+                      disabled={isAdminDrawing}
+                      style={{ background: 'var(--accent-purple)', border: 'none' }}
+                    >
+                      {isAdminDrawing ? 'Executing Algorithm...' : 'Run Jackpot Draw'}
+                    </button>
+                  </div>
+                  
+                  {isAdminDrawing && (
+                    <div className="card" style={{ flex: 1, textAlign: 'center', borderColor: 'var(--accent-purple)', background: 'rgba(0,0,0,0.2)' }}>
+                      <Loader2 size={32} className="animate-spin" style={{ margin: '0 auto 1rem', color: 'var(--accent-purple)' }} />
+                      <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>Scanning participants...</div>
+                    </div>
+                  )}
+
+                  {drawResult && !isAdminDrawing && (
+                    <div className="card" style={{ flex: 1, textAlign: 'center', borderColor: 'var(--primary)', background: 'rgba(16, 185, 129, 0.05)', animation: 'fadeIn 0.5s ease-out' }}>
+                      <PartyPopper size={32} style={{ margin: '0 auto 1rem', color: 'var(--primary)' }} />
+                      <div style={{ fontWeight: 800, fontSize: '1.2rem' }}>Winner Selected!</div>
+                      <div style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>{drawResult.name}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* User Management */}
+              <div className="card" style={{ gridColumn: 'span 3' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <UserCog size={24} color="var(--secondary)" /> User Management
+                  </h3>
+                  <div style={{ position: 'relative' }}>
+                    <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+                    <input 
+                      type="text" 
+                      placeholder="Search golfers..." 
+                      style={{ padding: '0.6rem 1rem 0.6rem 2.5rem', background: 'var(--input-bg)', border: '1px solid var(--border-glass)', borderRadius: '10px', color: 'white' }}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <table style={{ width: '100%', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid var(--border-glass)', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                        <th style={{ padding: '1rem' }}>NAME</th>
+                        <th style={{ padding: '1rem' }}>HANDICAP</th>
+                        <th style={{ padding: '1rem' }}>STATUS</th>
+                        <th style={{ padding: '1rem', textAlign: 'right' }}>ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mockUsers.filter(u => u.name.toLowerCase().includes(searchQuery.toLowerCase())).map(u => (
+                        <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.02)' }}>
+                          <td style={{ padding: '1rem' }}>
+                            <div style={{ fontWeight: 600 }}>{u.name}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{u.email}</div>
+                          </td>
+                          <td style={{ padding: '1rem', fontWeight: 500 }}>{u.handicap}</td>
+                          <td style={{ padding: '1rem' }}>
+                            <span style={{ 
+                              padding: '0.25rem 0.75rem', 
+                              borderRadius: '20px', 
+                              fontSize: '0.7rem', 
+                              fontWeight: 700, 
+                              background: u.status === 'Elite' ? 'var(--premium-gradient)' : 'rgba(255,255,255,0.05)',
+                              color: 'white'
+                            }}>
+                              {u.status}
+                            </span>
+                          </td>
+                          <td style={{ padding: '1rem', textAlign: 'right' }}>
+                            <button style={{ background: 'none', color: 'var(--text-muted)', marginRight: '1rem' }} aria-label="Edit User"><Settings size={16} /></button>
+                            <button style={{ background: 'none', color: '#ef4444' }} aria-label="Ban User"><Trash2 size={16} /></button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
